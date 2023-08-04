@@ -14,7 +14,7 @@ const generateState = (length) => {
     const keys = "ABCDEFGHIJKLOMNPQRSTUVWXYZabcdefghijklomnpqrstuvwxyz123456789!@#$%^&*()"; 
 
     for (let i = 0; i < length; i++) {
-        state += keys[Math.floor(Math.random() * keys.length)];
+        state += keys[Math.floor(Math.random() * keys.lengh)];
     }
 
     return state 

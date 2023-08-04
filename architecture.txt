@@ -1,0 +1,45 @@
+Music Player Architecture: 
+
+Server: uses express.js 
+    - Application 
+        --> Request authorization to access data from server (1) ** 
+            - get request to /authorize endpoint (specifically /auth/login)
+            with client_id, response_type, redirect_uri, state, scope   
+    
+        --> Request access and refresh tokens (4) ** 
+            - post request to /api/token endpoint (specifically /auth/callback)
+            client_id, client_secret, grant_type, code, redirect_uri
+            - for refresh token, post request needed
+
+        --> Use access token in requests to Web API (6)
+            - access_token 
+
+        --> User access token in requests to Web API (8)
+            - access_token 
+
+    - Spotify Server 
+        --> Display scopes and prompt user to login (2) ** 
+
+        --> Return access and refresh token (5) ** 
+            - on success--200 status returns json object 
+            access_token, token_type, expires_in, refresh_token, scope  
+            - for refresh token on returns json object 
+            access_token, token_type, scope, expires_in
+
+        --> Return requested data (json object) (7)
+            - to use access token 
+
+        --> Return new access token (json object) (9)
+            - to user access token and use access token 
+
+    - User 
+        --> Login and authorize access (3) ** 
+            - returns code and state
+            - user is redirected to the redirect_uri
+
+    - Proxy Backend Requests
+
+    - .env 
+        --> contains client_id and client_secret
+
+    

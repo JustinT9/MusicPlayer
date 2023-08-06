@@ -3,9 +3,9 @@ import './LoginPlayer.css';
 
 function LoginPlayer() {
     return (
-        <>
-        qw
-        </>
+        <button className="spotifyLogin" href="/auth/login">
+            Spotify Login
+        </button>
     )
 }
 

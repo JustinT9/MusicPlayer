@@ -15,7 +15,9 @@ function MusicPlayer() {
         getToken(); 
     }, [])
 
-    return token === "" ? <LoginPlayer/> : <MusicControl/> 
+    return (
+        token === "" ? <LoginPlayer/> : <MusicControl/> 
+    )
 }
 
 export default MusicPlayer; 

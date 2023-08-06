@@ -1,0 +1,17 @@
+.spotifyLogin {
+    background-color: #1ED760;
+    height: 50px; 
+    width: 200px;
+    border: hidden; 
+    border-radius: 15px;  
+}
+
+.spotifyLogin:hover {
+    opacity: 0.8; 
+    transition: 0.1; 
+}
+
+.spotifyLogin:active {
+    opacity: 0.7;
+    transition: 0.1;  
+}

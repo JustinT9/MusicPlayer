@@ -39,27 +39,22 @@ app.get('/auth/login', (req, res) => {
 // request access token 
 app.get('/auth/callback', (req, res) => {
     var code = req.query.code; 
-    var state = req.query.state || null; 
+    var state = req.query.state; 
 
-    if (state === null) {
-        res.redirect('/#' + querystring.stringify({
-            error: "state mismatch"
-        }))
-    } else {
-        var authOptions = {
-            url: "https://account.spotify/api/token",
-            form: {
-                grant_type: "authorization_code", 
-                code: code, 
-                redirect_uri: "http://localhost:3000/auth/callback"
-            }, 
-            headers: {
-                'Authorization': 'Basic ' + (Buffer.from(spotify_client_id + ":" + spotify_client_secret).toString('base64')), 
-                'Content-Type' : 'application/x-www-form-urlencoded' 
-            }, 
-            json: true
-        }
-    }; 
+    var authOptions = {
+        url: "https://account.spotify/api/token",
+        form: {
+            grant_type: "authorization_code", 
+            code: code, 
+            redirect_uri: "http://localhost:3000/auth/callback"
+        }, 
+        headers: {
+            'Authorization': 'Basic ' + (Buffer.from(spotify_client_id + ":" + spotify_client_secret).toString('base64')), 
+            'Content-Type' : 'application/x-www-form-urlencoded' 
+        }, 
+        json: true
+    }
+
 
     request.post(authOptions, (error, res, body) => {
         if (!error && res.statusCode === 200) {
@@ -68,6 +63,8 @@ app.get('/auth/callback', (req, res) => {
         }
     })
 });
+
+
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import LoginPlayer from './LoginPlayer.js'
 import MusicControl from './MusicControl.js'
 import './MusicPlayer.css'; 
@@ -16,7 +16,7 @@ function MusicPlayer() {
     }, [])
 
     return (
-        token === "" ? <LoginPlayer/> : <MusicControl/> 
+        token === "" ? <LoginPlayer/> : <MusicControl token={token} /> 
     )
 }
 

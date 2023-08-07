@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'; 
+import React from 'react'; 
 import './LoginPlayer.css'; 
 
 function LoginPlayer() {
     return (
-        <button className="spotifyLogin" href="/auth/login">
-            Spotify Login
-        </button>
+        <div className='loginWrapper'>
+            <a className="loginSpotify" href="/auth/login">Login with Spotify</a>
+        </div>
     )
 }
 

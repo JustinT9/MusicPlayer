@@ -1,13 +1,18 @@
-const express = require('express'); 
+const express = require('express');
+const request = require('request'); 
 const dotenv = require('dotenv'); 
 
 const port = 5000; 
 const app = express();
 
+global.access_token = ''
+
 dotenv.config(); 
 
 var spotify_client_id = process.env.SPOTIFY_CLIENT_ID; 
 var spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+
+var spotify_redirect_uri = "http://localhost:3000/auth/callback"; 
 
 const generateState = (length) => {
     let state = '';
@@ -22,7 +27,6 @@ const generateState = (length) => {
 
 // request authorization token 
 app.get('/auth/login', (req, res) => {
-    const uri = "http://localhost:3000/auth/callback"; 
     var scope = "streaming user-read-email user-read-private"; 
 
     // these are the necessary parameters for the request direct 
@@ -30,7 +34,7 @@ app.get('/auth/login', (req, res) => {
         response_type: "code", 
         client_id: spotify_client_id, 
         scope: scope, 
-        redirect_uri: uri, 
+        redirect_uri: spotify_redirect_uri, 
         state: generateState(16)
     })
 
@@ -45,10 +49,10 @@ app.get('/auth/callback', (req, res) => {
 
     // parameters needed for the access token request 
     var authOptions = {
-        url: "https://account.spotify/api/token",
+        url: "https://accounts.spotify.com/api/token",
         form: {
             code: code, 
-            redirect_uri: "http://localhost:3000/auth/callback",
+            redirect_uri: spotify_redirect_uri,
             grant_type: "authorization_code"
         }, 
         headers: {
@@ -56,12 +60,12 @@ app.get('/auth/callback', (req, res) => {
             'Content-Type' : 'application/x-www-form-urlencoded'
         }, 
         json: true
-    }
+    };
 
     // on response it will return the access token and you can direct to the root 
-    request.post(authOptions, (error, res, body) => {
-        if (!error && res.statusCode === 200) {
-            var access_token = body.access_token 
+    request.post(authOptions, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+            access_token = body.access_token; 
             res.redirect('/'); 
         }
     })
@@ -70,7 +74,7 @@ app.get('/auth/callback', (req, res) => {
 // returns access token from the request as json to the /auth/token endpoint 
 // which will allow us to start the music player and make API calls and retrieve important data 
 app.get('/auth/token', (req, res) => {
-    res.json({ access_token: access_token })
+    res.json({access_token: access_token})
 })
 
 app.listen(port, () => {

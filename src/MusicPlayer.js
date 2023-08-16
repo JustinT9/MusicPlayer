@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import LoginPlayer from './LoginPlayer.js'
 import MusicControl from './MusicControl.js'
-import './MusicPlayer.css'; 
 
 function MusicPlayer() {
     const [token, setToken] = useState(''); 

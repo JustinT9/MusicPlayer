@@ -8,7 +8,7 @@
 }
 
 .trackDisplay {
-    font-size: 25px; 
+    font-size: 12px; 
     display: flex; 
     flex: 2; 
     align-items: center; 
@@ -36,3 +36,15 @@
     justify-content: center;
     flex: 1
 }
+
+.progressContainer {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;  
+}
+
+.trackProgress {
+    width: 80%; 
+}
+

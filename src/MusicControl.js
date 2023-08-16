@@ -1,28 +1,20 @@
 import { useState, useEffect } from 'react'; 
+import { LinearProgress } from '@mui/material';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import './MusicControl.css'
 
-const oldtrack = {
-    name: "",
-    album: {
-        images: [
-            { url: "" }
-        ]
-    },
-    artists: [
-        { name: "" }
-    ]
-}
-
 function MusicControl({ token }) {
-    const [track, setTrack] = useState(oldtrack); 
-    const [paused, setPaused] = useState(false); 
+    const [player, setPlayer] = useState(null); 
+    const [track, setTrack] = useState(null); 
     const [state, setState] = useState(false); 
-    const [image, setImage] = useState(); 
-    const [player, setPlayer] = useState(undefined); 
+    const [paused, setPaused] = useState(false); 
+    const [position, setPosition] = useState(0); 
+    const [duration, setDuration] = useState(0); 
+    const [currentTime, setCurrentTime] = useState(0); 
+    const [WebPlaybackPlayer, setWebPlaybackPlayer] = useState(null);
 
     useEffect(() => {
         const script = document.createElement("script"); 
@@ -65,6 +57,9 @@ function MusicControl({ token }) {
                 
                 setTrack(state.track_window.current_track); 
                 setPaused(state.paused); 
+                setPosition(state.position/1000);
+                setDuration(state.duration); 
+                setWebPlaybackPlayer(state);
 
                 player.getCurrentState().then(state => {
                     state ? setState(true) : setState(false) 
@@ -76,7 +71,22 @@ function MusicControl({ token }) {
         };
     }, []);
 
-    if (!state || player === undefined) {
+    useEffect(() => {
+        const progression = setInterval(() => {
+
+            if (track && !paused) {  
+                setPosition(position + 1); 
+                console.log(position); 
+            }
+        }, 1000)
+
+        return () => {
+            clearInterval(progression)
+        }
+
+    }, [track, position, WebPlaybackPlayer, currentTime])
+
+    if (!state) {
         return (
             <>
                 Play on Spotify
@@ -94,7 +104,16 @@ function MusicControl({ token }) {
                             {track.name} <br/>
                             {track.artists[0].name}
                     </div>
-    
+
+                    <div className='progressContainer'>
+                        <LinearProgress 
+                            className='trackProgress'
+                            variant='determinate' 
+                            value={position}
+                        />
+                    </div>
+                    
+
                     <div className='playbackControl'> 
                         <SkipPreviousIcon 
                             className='playbackElement' 

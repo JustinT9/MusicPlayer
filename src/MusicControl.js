@@ -12,9 +12,23 @@ function MusicControl({ token }) {
     const [state, setState] = useState(false); 
     const [paused, setPaused] = useState(false); 
     const [position, setPosition] = useState(0); 
-    const [duration, setDuration] = useState(0); 
-    const [currentTime, setCurrentTime] = useState(0); 
+    const [currentTime, setCurrentTime] = useState({min: 0, sec: 0}); 
+    const [duration, setDuration] = useState({min: 0, sec: 0}); 
+    const [msDuration, setmsDuration] = useState(0); 
+    const [progress, setProgress] = useState(0); 
     const [WebPlaybackPlayer, setWebPlaybackPlayer] = useState(null);
+
+    const msToMinsSecs = (ms) => {
+        var min = Math.floor(ms / 60000);
+        var sec = Math.floor((ms % 60000) / 1000);
+        return {min, sec} 
+    }
+
+    function secondsToTime(s) {
+        var min = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        return {min, sec}
+    }
 
     useEffect(() => {
         const script = document.createElement("script"); 
@@ -57,10 +71,15 @@ function MusicControl({ token }) {
                 
                 setTrack(state.track_window.current_track); 
                 setPaused(state.paused); 
-                setPosition(state.position/1000);
-                setDuration(state.duration); 
                 setWebPlaybackPlayer(state);
 
+                if (state.position === 0) {
+                    setPosition(state.position);
+                    setCurrentTime(secondsToTime(state.position)); 
+                    setDuration(msToMinsSecs(state.duration));
+                    setmsDuration(state.duration); 
+                }
+                
                 player.getCurrentState().then(state => {
                     state ? setState(true) : setState(false) 
                 });
@@ -72,19 +91,23 @@ function MusicControl({ token }) {
     }, []);
 
     useEffect(() => {
-        const progression = setInterval(() => {
-
+        const trackProgression = setInterval(() => {
             if (track && !paused) {  
-                setPosition(position + 1); 
-                console.log(position); 
+                let msPosition = position * 1000; 
+                let progressPercentage = Math.round((msPosition / msDuration) * 100) 
+
+                setPosition(position + 1);
+                setCurrentTime(secondsToTime(position)); 
+                setProgress(progressPercentage); 
             }
+
         }, 1000)
 
         return () => {
-            clearInterval(progression)
+            clearInterval(trackProgression)
         }
 
-    }, [track, position, WebPlaybackPlayer, currentTime])
+    }, [position, currentTime, WebPlaybackPlayer, paused])
 
     if (!state) {
         return (
@@ -106,14 +129,15 @@ function MusicControl({ token }) {
                     </div>
 
                     <div className='progressContainer'>
+                        {currentTime.min} : {currentTime.sec.toString().padStart(2, '0')}
                         <LinearProgress 
                             className='trackProgress'
                             variant='determinate' 
-                            value={position}
+                            value={progress}
                         />
+                        {duration.min} : {duration.sec.toString().padStart(2, '0')}
                     </div>
                     
-
                     <div className='playbackControl'> 
                         <SkipPreviousIcon 
                             className='playbackElement' 
